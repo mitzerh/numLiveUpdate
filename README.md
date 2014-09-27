@@ -8,6 +8,8 @@ Example:
 As a jQuery element bind;
 [http://jsfiddle.net/mitzerh/r93bn13v/](http://jsfiddle.net/mitzerh/r93bn13v/)
 
+As an independent plugin:
+[http://jsfiddle.net/mitzerh/7thq7553/](http://jsfiddle.net/mitzerh/7thq7553/)
 
 ## Format options
 
@@ -25,4 +27,4 @@ As a jQuery element bind;
 
 `startZero` - (boolean) On inital page load, start from 0 | DEFAULT: false
 
-`start` - (number) Only if not used as a element binding | DEFAULT: 0
+`start` - (number) Only if used as an independent plugin. Ignored on element bind | DEFAULT: 0
