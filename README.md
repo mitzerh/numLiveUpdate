@@ -5,10 +5,12 @@ Display a number difference that mimic's a live update
 
 Example:
 
-As a jQuery element bind;
+As a jQuery element bind:
+
 [http://jsfiddle.net/mitzerh/r93bn13v/](http://jsfiddle.net/mitzerh/r93bn13v/)
 
 As an independent plugin:
+
 [http://jsfiddle.net/mitzerh/7thq7553/](http://jsfiddle.net/mitzerh/7thq7553/)
 
 ## Format options
