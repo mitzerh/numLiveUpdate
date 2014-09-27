@@ -4,7 +4,10 @@ jQuery.fn.numLiveUpdate
 Display a number difference that mimic's a live update
 
 Example:
+
+As a jQuery element bind;
 [http://jsfiddle.net/mitzerh/r93bn13v/](http://jsfiddle.net/mitzerh/r93bn13v/)
+
 
 ## Format options
 
@@ -21,3 +24,5 @@ Example:
 `format` - (function) Callback function to format your number value | DEFAULT: none
 
 `startZero` - (boolean) On inital page load, start from 0 | DEFAULT: false
+
+`start` - (number) Only if not used as a element binding | DEFAULT: 0

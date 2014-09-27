@@ -1,7 +1,8 @@
 (function($){
 
     var dataAttrName = "data-numinc-curr",
-        timeoutName = "timeoutFN";
+        timeoutName = "timeoutFN",
+        store = {};
     
     var randomNumber = function(ceil, floor) {
 
@@ -56,26 +57,101 @@
     };
 
     var setTimeoutFN = function(target, fn) {
-        $.data(target, timeoutName, fn);
+        if (isStr(target)) {
+            store[target].timeout = fn;
+        } else {
+            $.data(target, timeoutName, fn);
+        }
     };
 
     var clearTimeoutFN = function(target) {
-        clearTimeout($.data(target, timeoutName));
+        clearTimeout((isStr(target)) ? store[target].timeout : $.data(target, timeoutName));
+    };
+
+    var isFn = function(val) {
+        return (typeof val === "function") ? true : false;
+    };
+
+    var isStr = function(val) {
+        return (typeof val === "string") ? true : false;
+    };
+
+    var getStore = function(id) {
+
+        return store[id].val;
+
+    };
+
+    var setStore = function(id, val) {
+
+        store[id].val = val;
+
+    };
+
+    var clearStore = function(id) {
+
+        try {
+            delete store[id];
+        } catch(err) {
+            store[id] = null;
+        }
+        
+    };
+
+    var getUID = function() {
+        var i = 0,
+            id = [dataAttrName, i].join("-");
+
+        while (store[id]) {
+            i++;
+            id = [dataAttrName, i].join("-");
+        }
+
+        return id;
     };
 
     var render = function(target, info) {
 
-        var start = 0,
-            curr = target.attr(dataAttrName) || false,
-            val = info.val,
+        var curr,
+            uid = false,
+            start = info.start || 0,
+            isFn = info.isFn,
+            val = parseFloat(info.val),
             interval = info.interval,
             duration = info.duration;
 
-        val = parseFloat(val);
+        // create temp storage
+        if (isFn) {
+
+            uid = getUID();
+
+            store[uid] = {
+                timeout: false,
+                val: start
+            };
+
+            curr = getStore(uid);
+            info.startZero = (start === 0) ? true : false;
+
+        } else {
+
+            curr = target.attr(dataAttrName) || false;
+
+        }
+
+        var set = function(val) {
+
+            if (isFn) {
+                target(info.format(val));
+            } else {
+                target.html(info.format(val));
+            }
+
+        };
 
         if (!curr) {
 
-            target.html(info.format(0));
+            set(0);
 
         } else {
 
@@ -84,11 +160,20 @@
             
         }
 
-        target.attr(dataAttrName, val);
+        if (isFn) {
+
+            setStore(uid, val);
+
+        } else {
+
+            target.attr(dataAttrName, val);
+
+        }
+        
 
         if (start === 0 && !info.startZero) {
 
-            target.html(info.format(val));
+            set(val);
 
         } else {
 
@@ -102,20 +187,20 @@
 
             var timeoutFN = function() {
 
-                clearTimeoutFN(target);
+                clearTimeoutFN(uid || target);
 
                 if (stepArr.length > 0) {
 
                     var timeout = stepArr.shift();
 
-                    setTimeoutFN(target, (function(){
+                    setTimeoutFN(uid || target, (function(){
 
                         return setTimeout(function(){
 
                             var num = (valArr.length > 0) ? valArr.shift() : 0;
                             start = (isNeg) ? (start - num) : (start + num);
-                            target.html(info.format(start));
-
+                            set(start);
+                            
                             timeoutFN();
 
                         }, timeout);
@@ -124,7 +209,12 @@
 
                 } else if (start !== val) {
 
-                    target.html(info.format(val));
+                    set(val);
+                    clearStore(uid);
+
+                } else if (isFn) {
+
+                    clearStore(uid);
 
                 }
 
@@ -132,28 +222,37 @@
 
             timeoutFN();
 
-
         }
 
     };
 
-    $.fn.numLiveUpdate = function(opts) {
+    var trigger = function(opts, target) {
 
-        var val = parseFloat(opts.val),
-            startZero = opts.startZero || false,
-            duration = opts.duration,
-            interval = opts.interval || 10,
-            format = opts.format || function(data) { return data; };
+        render(target, {
+            val: parseFloat(opts.val),
+            isFn: isFn(target),
+            duration: opts.duration,
+            start: opts.start || 0,
+            startZero: opts.startZero || false,
+            interval: opts.interval || 10,
+            format: opts.format || function(data) { return data; }
+        });
+
+    };
+
+    // as a function
+    $.numLiveUpdate = function(opts, callback) {
+
+        trigger(opts, callback);
+
+    };
+
+    // as a binding
+    $.fn.numLiveUpdate = function(opts) {
 
         return this.each(function(){
 
-            render($(this), {
-                val: val,
-                interval: interval,
-                duration: duration,
-                format: format,
-                startZero: startZero
-            });
+            trigger(opts, $(this));
 
         });
 
