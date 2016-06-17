@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     // comment banner
     var comment = [
         '/**',
-        'jQuery.fn.' + conf.name + ' v' + conf.version + ' | ' + grunt.template.today("yyyy-mm-dd"),
+        conf.name + ' v' + conf.version + ' | ' + grunt.template.today("yyyy-mm-dd"),
         conf.description,
         'by ' + conf.author,
         conf.license,

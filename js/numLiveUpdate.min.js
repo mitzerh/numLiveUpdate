@@ -1,5 +1,5 @@
 /**
-* jQuery.fn.numLiveUpdate v0.3.0 | 2016-06-17
+* numLiveUpdate v0.3.0 | 2016-06-17
 * jQuery plugin to display a number difference that mimic's a live update
 * by Helcon Mabesa
 * MIT license http://opensource.org/licenses/MIT
