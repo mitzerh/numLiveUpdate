@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 
         _conf: conf,
 
-        _filename: 'jquery.fn.<%= _conf.name %>',
+        _filename: '<%= _conf.name %>',
 
         clean: {
             'dest': 'js/*'
