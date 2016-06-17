@@ -1,6 +1,6 @@
 {
   "name": "numLiveUpdate",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "jQuery plugin to display a number difference that mimic's a live update",
   "author": "Helcon Mabesa",
 
