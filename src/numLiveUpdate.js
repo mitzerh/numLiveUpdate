@@ -199,7 +199,7 @@
         var App = function(opts, callback) {
 
             // requires a callback function
-            if (!isFN(callback)) { return false; }
+            if (!isFn(callback)) { return false; }
 
             render(callback, {
                 val: parseFloat(opts.val),
