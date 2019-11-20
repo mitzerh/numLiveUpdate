@@ -1,5 +1,5 @@
 /**
-* numLiveUpdate v0.3.0 | 2016-06-17
+* numLiveUpdate v0.3.0 | 2019-11-20
 * jQuery plugin to display a number difference that mimic's a live update
 * by Helcon Mabesa
 * MIT license http://opensource.org/licenses/MIT
@@ -16,109 +16,7 @@
         var dataAttrName = "data-numinc-curr",
             store = {};
 
-        var randomNumber = function(ceil, floor) {
-
-            var ret = Math.floor(Math.floor(Math.random() * (ceil - floor) + 1) + floor);
-            return ret;
-
-        };
-
-        var getRange = function(val) {
-            var ceil = Math.abs(val),
-                floor = val * -1,
-                ret = randomNumber(ceil, floor);
-
-            return ret;
-        };
-
-        var getMargin = function(val) {
-            var div = Math.abs(getRange(val));
-            div = (div < 1) ? 1 : div;
-
-            var diff = Math.floor(Math.abs(getRange(val / div))),
-                ret = Math.floor(val - diff);
-
-            return ret;
-        };
-
-        var generate = function(val, interval) {
-
-            var pr = val / interval, // portion
-                arr = [],
-                remaining = pr * interval;
-
-            for (var i = 0; i < interval; i++) {
-
-                var mr = getMargin(pr),
-                    pm = getRange(mr), // plus/minus
-                    iVal = pr + pm;
-
-                iVal = (remaining < iVal) ? remaining : iVal;
-                remaining = remaining - iVal;
-
-                if (iVal > 0) {
-                    arr.push(iVal);
-                } else {
-                    break;
-                }
-
-            }
-
-            return arr;
-
-        };
-
-        var setTimeoutFN = function(uid, fn) {
-            store[uid].timeout = fn;
-        };
-
-        var clearTimeoutFN = function(uid) {
-            clearTimeout(store[uid].timeout);
-        };
-
-        var isFn = function(val) {
-            return (typeof val === "function") ? true : false;
-        };
-
-        var isStr = function(val) {
-            return (typeof val === "string") ? true : false;
-        };
-
-        var getStore = function(id) {
-
-            return store[id].val;
-
-        };
-
-        var setStore = function(id, val) {
-
-            store[id].val = val;
-
-        };
-
-        var clearStore = function(id) {
-
-            try {
-                delete store[id];
-            } catch(err) {
-                store[id] = null;
-            }
-
-        };
-
-        var getUID = function() {
-            var i = 0,
-                id = [dataAttrName, i].join("-");
-
-            while (store[id]) {
-                i++;
-                id = [dataAttrName, i].join("-");
-            }
-
-            return id;
-        };
-
-        var render = function(callback, info) {
+        function render(info, step, done) {
 
             var curr,
                 uid = getUID(),
@@ -136,7 +34,7 @@
             info.startZero = (start === 0) ? true : false;
 
             var set = function(val) {
-                callback(info.format(val));
+                step(info.format(val));
             };
 
             if (!curr) {
@@ -185,14 +83,16 @@
                         }()));
 
                     } else if (start !== val) {
-
                         set(val);
                         clearStore(uid);
-
+                        if (isFn(done)) {
+                            done(uid);
+                        }
                     } else {
-
                         clearStore(uid);
-
+                        if (isFn(done)) {
+                            done(uid);
+                        }
                     }
 
                 };
@@ -201,25 +101,118 @@
 
             }
 
-        };
+            return uid;
 
-        var App = function(opts, callback) {
+        }
 
-            // requires a callback function
-            if (!isFn(callback)) { return false; }
+        function randomNumber(ceil, floor) {
+            return Math.floor(Math.floor(Math.random() * (ceil - floor) + 1) + floor);
+        }
 
-            render(callback, {
+        function getRange(val) {
+            var ceil = Math.abs(val),
+                floor = val * -1,
+                ret = randomNumber(ceil, floor);
+
+            return ret;
+        }
+
+        function getMargin(val) {
+            var div = Math.abs(getRange(val));
+            div = (div < 1) ? 1 : div;
+
+            var diff = Math.floor(Math.abs(getRange(val / div))),
+                ret = Math.floor(val - diff);
+
+            return ret;
+        }
+
+        function generate(val, interval) {
+
+            var pr = val / interval, // portion
+                arr = [],
+                remaining = pr * interval;
+
+            for (var i = 0; i < interval; i++) {
+
+                var mr = getMargin(pr),
+                    pm = getRange(mr), // plus/minus
+                    iVal = pr + pm;
+
+                iVal = (remaining < iVal) ? remaining : iVal;
+                remaining = remaining - iVal;
+
+                if (iVal > 0) {
+                    arr.push(iVal);
+                } else {
+                    break;
+                }
+
+            }
+
+            return arr;
+
+        }
+
+        function setTimeoutFN(uid, fn) {
+            store[uid].timeout = fn;
+        }
+
+        function clearTimeoutFN(uid) {
+            clearTimeout(store[uid].timeout);
+        }
+
+        function isFn(val) {
+            return (typeof val === "function") ? true : false;
+        }
+
+        function isStr(val) {
+            return (typeof val === "string") ? true : false;
+        }
+
+        function getStore(id) {
+            return store[id].val;
+        }
+
+        function setStore(id, val) {
+            store[id].val = val;
+        }
+
+        function clearStore(id) {
+            try {
+                delete store[id];
+            } catch(err) {
+                store[id] = null;
+            }
+        }
+
+        function getUID() {
+            var i = 0,
+                id = [dataAttrName, i].join("-");
+
+            while (store[id]) {
+                i++;
+                id = [dataAttrName, i].join("-");
+            }
+
+            return id;
+        }
+
+        return function(opts, step, done) {
+
+            // requires a step callback function
+            if (!isFn(step)) { return null; }
+
+            return render({
                 val: parseFloat(opts.val),
                 duration: opts.duration,
                 start: opts.start || 0,
                 startZero: opts.startZero || false,
                 interval: opts.interval || 10,
                 format: opts.format || function(data) { return data; }
-            });
+            }, step, done);
 
         };
-
-        return App;
 
     }())
 
