@@ -58,7 +58,7 @@ module.exports = function(grunt) {
                 },
                 expand: true,
                 files: {
-                    'js/<%= _filename %>.min.js': 'src/<%= _filename %>.js'
+                    'js/<%= _filename %>.min.js': 'js/<%= _filename %>.js'
                 }
 
             }

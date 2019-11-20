@@ -1,16 +1,13 @@
 {
   "name": "numLiveUpdate",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "jQuery plugin to display a number difference that mimic's a live update",
   "author": "Helcon Mabesa",
-
   "repository": {
     "type": "git",
     "url": "https://github.com/mitzerh/jquery.fn.numLiveUpdate"
   },
-
   "license": "MIT license http://opensource.org/licenses/MIT",
-
   "private": true,
   "devDependencies": {
     "grunt": "~0.4.2",
